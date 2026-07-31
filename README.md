@@ -19,7 +19,7 @@ The physics problem addressed in this project involves characterizing entangleme
     *   A PyTorch Multilayer Perceptron (`QuantumMLP`) with Early Stopping and Validation.
     *   Tools for Permutation Importance, Confusion Matrices, and Support Vector distribution analysis.
 
-## ⚙️ Prerequisites & Installation
+## Prerequisites & Installation
 
 To run this project, you will need:
 *   **C++ Compiler**: `g++` with C++11 support.
