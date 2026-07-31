@@ -1,33 +1,39 @@
-# Quantum Entanglement & Bell Violation Classifier
+# Quantum Entanglement and Bell Violation Classifier
 
-Progetto di Machine Learning applicato alla Fisica Quantistica per la classificazione di stati bipartiti (due qubit). Il sistema utilizza reti neurali profonde (**PyTorch**) e support vector machines per mappare la frontiera tra stati separabili, entangled e non-locali.
+This repository provides a computational framework to determine the quantum separability boundary and Bell inequality violations in 2-qubit systems using Machine Learning[cite: 34]. It combines a high-performance C++ backend for quantum state generation with a Python-based Machine Learning pipeline for classification and physical analysis.
 
----
+## Theoretical Background
 
-##  Descrizione del Progetto
+The physics problem addressed in this project involves characterizing entanglement in bipartite systems described by a $4\times4$ density matrix $\rho$. 
+*   **Peres-Horodecki Criterion (PPT)**: A state is separable if and only if its partial transpose $\rho^{T_A}$ has non-negative eigenvalues ($\rho^{T_A} \ge 0$).
+*   **Bell's Inequality (CHSH)**: The maximum violation is calculated analytically using the Horodecki criterion, extracting eigenvalues from the correlation matrix to determine if the state violates classical local realism ($S > 2$).
+*   **Physical Metrics**: The project calculates State Purity, Von Neumann Entropy, and Entanglement Entropy to analyze the Araki-Lieb inequality and the degree of quantum correlation.
 
-Il progetto affronta il problema della caratterizzazione dell'entanglement in sistemi quantistici descritti da matrici di densità $\rho$ di dimensione $4 \times 4$. L'obiettivo è addestrare modelli in grado di distinguere:
-1.  **Criterio di Peres-Horodecki (PPT):** Identificazione degli stati *Separabili* vs *Entangled*.
-2.  **Violazione delle Disuguaglianze di Bell:** Identificazione degli stati che manifestano correlazioni non-locali.
+## Repository Structure
 
-Il workflow include il preprocessing fisico delle matrici, la riduzione della dimensionalità tramite **PCA** (Principal Component Analysis) e l'ottimizzazione di un'architettura **Multi-Layer Perceptron (MLP)**.
+*   **`funzioni.h` / `QuantumGenerator`**: C++ class utilizing the `Eigen` library to generate random and separable 4x4 density matrices[cite: 35]. It computes the partial transpose, the PPT criterion, and the Horodecki criterion.
+*   **`data_gen.cpp`**: The C++ main application. It generates a balanced dataset of separable and entangled states, extracting 32 raw features (real and imaginary parts of the density matrix) alongside `is_entangled`, `violates_bell`, and `bell_value` labels, saving them to `quantum_data_rich.csv`.
+*   **`Makefile`**: Compilation script linking the C++ source files with the Eigen3 library headers (`/usr/include/eigen3`).
+*   **Python ML Pipeline (`funzioni.py` / Notebooks)**: Includes functions to reconstruct density matrices from CSV data, calculate entropies, and train models. It features:
+    *   Logistic Regression and Support Vector Machines (SVM) with GridSearchCV.
+    *   A PyTorch Multilayer Perceptron (`QuantumMLP`) with Early Stopping and Validation.
+    *   Tools for Permutation Importance, Confusion Matrices, and Support Vector distribution analysis.
 
----
+## ⚙️ Prerequisites & Installation
 
-## Caratteristiche Tecniche
+To run this project, you will need:
+*   **C++ Compiler**: `g++` with C++11 support.
+*   **Eigen3**: C++ template library for linear algebra (expected at `/usr/include/eigen3`).
+*   **Python 3.x**:
+    *   `numpy`, `pandas`, `matplotlib`, `seaborn`.
+    *   `scikit-learn`.
+    *   `torch` (PyTorch).
 
-* **Dataset:** Matrici di densità quantistiche ricostruite (32 parametri reali per stato).
-* **Riduzione Dimensionale:** PCA per il mantenimento del 95% della varianza.
-* **Deep Learning:** Implementazione di `QuantumMLP` in PyTorch.
-* **Ottimizzazione:** Grid Search sistematica per funzioni di attivazione (SiLU, ELU, LeakyReLU) e ottimizzatori (AdamW, RMSprop).
-* **Gestione Sbilanciamento:** Bilanciamento delle classi tramite `pos_weight` per la gestione della rarità degli stati che violano Bell.
+## Usage
 
----
-
-## Struttura del Repository
-
-* `Esame.ipynb`: Notebook principale contenente l'intero workflow di analisi e addestramento.
-* `funzioni.py`: Modulo Python con le utility per la ricostruzione delle matrici e il plotting professionale.
-* `data_gen.cpp`: Main per la generazione del Dataset 
-* `funzioni.h`: Funzioni per la generazione del Dataset
-* `Makefile`
+**1. Generate the Quantum Dataset**
+Compile the C++ code using the provided `Makefile` and run the generator:
+```bash
+make clean
+make all
+make run
